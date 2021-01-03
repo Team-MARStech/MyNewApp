@@ -1,5 +1,7 @@
 var express = require('express');
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const postRouter = require('./Routes/posts-controller');
+const { startDbConnection, closeDbConnection } = require('./util/db-connect');
 
 var app = express();
 var port  = 3000;
@@ -8,10 +10,13 @@ var port  = 3000;
  */
 app.use(bodyParser.json());
 
-//Routes
-app.get('/',(req,res,next)=> {
+//Routes 
+app.get('/', async (req,res,next)  => {
     res.send("Hello World")
+    await startDbConnection();
 })
+// Post Routes 
+app.use('/posts',postRouter);
 
 app.post('/getParams' , (req,res,next)=>{
     console.log(req.body);
