@@ -1,16 +1,16 @@
 var express = require('express');
 
 var postRouter = express.Router();
-const {Post} = require('../models/post')
+const { Post } = require('../models/post')
 
 
-postRouter.get('/',async (req,res,next)=>{
+postRouter.get('/', async (req, res, next) => {
     var posts = await Post.find();
     res.status(200).json(posts);
     next();
 })
 
-postRouter.post('/' , async (req, res, next) => {
+postRouter.post('/', async (req, res, next) => {
     var newPost = new Post({
         title: req.body.title,
         body: req.body.body,
@@ -26,17 +26,32 @@ postRouter.post('/' , async (req, res, next) => {
     next();
 })
 
-postRouter.delete('/:id' ,async (req, res, next) => {
+postRouter.patch('/', async (req, res, next) => {
+    try {
+        var result = await Post.findByIdAndUpdate(req.body._id, req.body)
+        if (!result) {
+            throw new Error(`Post Does Not Exist With Id : ${req.params.id}`);
+        }
+        res.status(200).json(req.body);
+
+    }
+    catch (er) {
+        res.status(500).json({ id: req.params.id, deleted: false, message: er.message });
+    }
+    next();
+})
+
+postRouter.delete('/:id', async (req, res, next) => {
     try {
         var result = await Post.findByIdAndDelete(req.params.id);
-        if(!result) {
+        if (!result) {
             throw new Error(`Post Does Not Exist With Id : ${req.params.id}`);
         }
         res.status(200).send(true);
 
-    } 
+    }
     catch (er) {
-        res.status(500).json({id: req.params.id , deleted : false , message: er.message});
+        res.status(500).json({ id: req.params.id, deleted: false, message: er.message });
     }
     next();
 })
