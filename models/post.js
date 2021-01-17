@@ -5,6 +5,6 @@ const postSchema = new mongoose.Schema({
     body: String,
     name: String,
     date: { type: Date, default: Date.now }
-})
+},{versionKey: false})
 
 exports.Post = mongoose.model('Post', postSchema);
